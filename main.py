@@ -1,23 +1,16 @@
 import pandas as pd
 import tabula
-import numpy as np
-import re
 from datetime import datetime, timedelta
-import datetime as dt
-import matplotlib.pyplot as plt
-import matplotlib
-from icalendar import Calendar, Event, vCalAddress, vText
-import pytz
+from icalendar import Calendar, Event, vText
 from collections import namedtuple
 import pypdf
-import matplotlib as mpl
-mpl.rcParams['figure.dpi'] = 300
 import os
 # Set the JAVA_HOME environment variable to enable Tabula functionality
 os.environ["JAVA_HOME"] = "C:\Program Files\Java\jdk-19"
 
 # Define the file path to the PDF that contains the data to be processed
 file_path = "E:\Downloads\PdfAnalysis (3).pdf"
+Location = 'Raigmore Hospital,Old Perth Rd, Inverness IV2 3UJ'
 
 # Extract data tables from the second page of the PDF using Tabula
 pdf_dataframes = tabula.read_pdf(file_path, pages="all")
@@ -172,15 +165,13 @@ def export_rota_to_ics(rota, doctor_name):
     Exports the rota information to an ICS calendar file.
     """
     calendar = Calendar()
-    calendar.add('prodid', '-//My calendar product//example.com//')
-    calendar.add('version', '2.0')
 
     for _, row in rota.iterrows():
         event = Event()
         event.add('summary', row['Shift Type'])
         event.add('dtstart', row['Start Time'])
         event.add('dtend', row['End Time'])
-        event['location'] = vText('Raigmore Hospital,Old Perth Rd, Inverness IV2 3UJ')
+        event['location'] = vText(Location)
         calendar.add_component(event)
 
     file_name = f"{doctor_name} Rota, {rota['Date'].iloc[0]} - {rota['Date'].iloc[-1]}.ics"
